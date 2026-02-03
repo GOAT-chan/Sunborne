@@ -1,6 +1,12 @@
 {
     "health_check_interval": 120,
     "event_query_interval": 5,
+    "embed_colors": {
+        "success": "#30c779",
+        "error": "#a64d3f",
+        "info": "#253745",
+        "privileged": "#4b2b52"
+    },
     "channels": {
         "beatmap_status": 727,
         "score_submission": 727
@@ -11,13 +17,13 @@
         "sh_rank": "sh_rank",
         "s_rank": "s_rank",
         "a_rank": "a_rank",
-        "b_rank": "b_rank",
-        "c_rank": "c_rank",
-        "d_rank": "d_rank",
         "300": "300",
         "100": "100",
         "50": "50",
-        "miss": "miss"
+        "miss": "miss",
+        "bat_role": ":musical_note:",
+        "dev_role": "dev_role",
+        "admin_role": ":shield:"
     },
     "privileged_users": []
 }

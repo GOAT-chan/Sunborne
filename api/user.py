@@ -1,0 +1,75 @@
+from api.helper.profile import get_profile, get_profile_friends, get_profile_grades, get_profile_medals, get_profile_with_gamemode
+from models.user import UserProfile
+from utils.cache import get_cache_key, get_from_cache, put_to_cache
+from utils.logger import Logger
+from datetime import datetime
+
+async def get_complete_user_profile(id: int, gamemode: str = None) -> UserProfile | None:
+    Logger.info(f"getting complete profile data for user id {id}")
+    # check cache
+    base_cache_key = f"%user_profile%{id}"
+    if get_from_cache(base_cache_key):
+        Logger.verbose("cache hit! (base profile data)")
+        profile = get_from_cache(base_cache_key)
+    else:
+        profile = UserProfile()
+        basic_profile = await get_profile(id)
+        if not basic_profile:
+            Logger.err(f"couldn't find profile data for user id {id}")
+            return None
+        Logger.verbose(f"get_profile response: {basic_profile}")
+        profile.user_name = basic_profile['username']
+        profile.user_id = basic_profile['user_id']
+        profile.country_code = basic_profile['country_code']
+        profile.description = basic_profile['description']
+        profile.avatar_url = basic_profile['avatar_url']
+        profile.banner_url = basic_profile['banner_url']
+        profile.registration_date = datetime.fromisoformat(basic_profile['register_date'])
+        profile.last_online = datetime.fromisoformat(basic_profile['last_online_time'])
+        profile.restricted = basic_profile['restricted']
+        profile.badges = basic_profile['badges']
+        profile.status = basic_profile['user_status']
+        profile.default_gamemode = basic_profile['default_gamemode']
+        friends = await get_profile_friends(id)
+        Logger.verbose(f"get_profile_friends response: {friends}")
+        profile.following = friends['following']
+        profile.followers = friends['followers']
+        Logger.verbose("putting base profile data to cache...")
+        put_to_cache(base_cache_key, profile)
+    # check cache for gamemode too
+    if not gamemode:
+        gamemode = profile.default_gamemode
+    gamemode_stats_cache_key = f"%user_profile%{id}|{gamemode}"
+    if get_from_cache(gamemode_stats_cache_key):
+        Logger.verbose("cache hit! (gamemode stats)")
+        profile.stats = get_from_cache(gamemode_stats_cache_key)
+    else:
+        gamemode_profile = await get_profile_with_gamemode(id, gamemode)
+        Logger.verbose(f"get_profile_with_gamemode response: {gamemode_profile}")
+        profile.stats.gamemode = gamemode_profile['stats']['gamemode']
+        profile.stats.global_rank = gamemode_profile['stats']['rank']
+        profile.stats.country_rank = gamemode_profile['stats']['country_rank']
+        profile.stats.play_count = gamemode_profile['stats']['play_count']
+        profile.stats.play_time = gamemode_profile['stats']['play_time']
+        profile.stats.total_score = gamemode_profile['stats']['total_score']
+        profile.stats.ranked_score = gamemode_profile['stats']['ranked_score']
+        profile.stats.accuracy = gamemode_profile['stats']['accuracy']
+        profile.stats.total_pp = gamemode_profile['stats']['pp']
+        profile.stats.max_combo = gamemode_profile['stats']['max_combo']
+        profile.stats.peak_global_rank = gamemode_profile['stats']['best_global_rank']
+        profile.stats.peak_country_rank = gamemode_profile['stats']['best_country_rank']
+        profile.stats.peak_global_rank_date = datetime.fromisoformat(gamemode_profile['stats']['best_global_rank_date'])
+        profile.stats.peak_country_rank_date = datetime.fromisoformat(gamemode_profile['stats']['best_country_rank_date'])
+        grades = await get_profile_grades(id, gamemode)
+        Logger.verbose(f"get_profile_grades response: {grades}")
+        profile.stats.grades.rank_xh = grades['count_xh']
+        profile.stats.grades.rank_x = grades['count_x']
+        profile.stats.grades.rank_sh = grades['count_sh']
+        profile.stats.grades.rank_s = grades['count_s']
+        profile.stats.grades.rank_a = grades['count_a']
+        medals = await get_profile_medals(id, gamemode)
+        Logger.verbose(f"get_profile_medals response: {medals}")
+        profile.stats.medals = len(medals['hush_hush']['medals']) + len(medals['beatmap_hunt']['medals']) + len(medals['mod_introduction']['medals']) + len(medals['skill']['medals'])
+        Logger.verbose("putting profile gamemode stats data to cache...")
+        put_to_cache(gamemode_stats_cache_key, profile.stats)
+    return profile

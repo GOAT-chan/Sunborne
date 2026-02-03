@@ -1,0 +1,6 @@
+discord-py-interactions==5.16.0
+httpx==0.28.1
+pydantic==2.12.5
+sqlmodel==0.0.32
+rich==14.3.2
+websockets==16.0

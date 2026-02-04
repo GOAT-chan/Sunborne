@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 class Config(BaseModel):
     health_check_interval: int
     event_query_interval: int
+    only_send_health_check_embed_when_failed: bool
     embed_colors: EmbedColors
     channels: Channels
     emojis: Emojis
@@ -15,8 +16,9 @@ class EmbedColors(BaseModel):
     privileged: str
 
 class Channels(BaseModel):
-    beatmap_status: int
-    score_submission: int
+    beatmap_status: int | None
+    score_submission: int | None
+    health_check: int | None
 
 class Emojis(BaseModel):
     xh_rank: str

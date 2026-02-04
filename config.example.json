@@ -1,6 +1,7 @@
 {
-    "health_check_interval": 120,
+    "health_check_interval": 60,
     "event_query_interval": 5,
+    "only_send_health_check_embed_when_failed": false,
     "embed_colors": {
         "success": "#30c779",
         "error": "#a64d3f",
@@ -9,7 +10,8 @@
     },
     "channels": {
         "beatmap_status": 727,
-        "score_submission": 727
+        "score_submission": 727,
+        "health_check": 727
     },
     "emojis": {
         "xh_rank": "xh_rank",

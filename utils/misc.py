@@ -1,8 +1,10 @@
-# fun fact: i ion need to do ts
-# but i dont like sunrise's gamemode names lol
+from interactions import TYPE_ALL_CHANNEL
+from models.config import Channels
+from models.status import ServerStatus
 from utils.config import get_config
+from utils.embeds import EmbedBuilder
 from utils.logger import Logger
-
+from datetime import datetime
 
 def map_sunrise_gamemode_to_sunborne(gamemode: str) -> str:
     match(gamemode):
@@ -57,3 +59,19 @@ def get_ruleset_icon_url(gamemode: str) -> str:
             return "https://raw.githubusercontent.com/ppy/osu-resources/refs/heads/master/osu.Game.Resources/Textures/Icons/RulesetTaiko.png"
         case "CatchTheBeat" | "RelaxCatchTheBeat" | "ScoreV2CatchTheBeat":
             return "https://raw.githubusercontent.com/ppy/osu-resources/refs/heads/master/osu.Game.Resources/Textures/Icons/RulesetCatch.png"
+        
+async def send_status_message(channel: TYPE_ALL_CHANNEL, status: ServerStatus = None):
+    embed = EmbedBuilder()
+    embed.set_title("Server status check")
+    embed.set_footer(f"Checked at {datetime.now().strftime("%H:%M %b %d, %Y")}")
+    if not status:
+        embed.set_color(get_config().embed_colors.error)
+        embed.add_content("Server did not respond to status query. Something is probably (very) wrong.")
+    else:
+        embed.set_color(get_config().embed_colors.success)
+        embed.add_content("Server responded to status query, everything's good!")
+        embed.add_field("Online", f"**{status.online_users - 1}** / {status.total_users - 1}", True)
+        embed.add_field("Score Submitted", str(status.scores_submitted), True)
+        embed.add_field("Maintenance?", str(status.maintenance))
+    if not status or status and not get_config().only_send_health_check_embed_when_failed:
+        await channel.send(embed=embed.build())

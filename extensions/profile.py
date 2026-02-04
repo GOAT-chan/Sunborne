@@ -51,7 +51,7 @@ class ProfileExtension(Extension):
     async def profile_command(self, ctx: SlashContext, user_id: int = None, discord: Member = None, game_mode: str = None):
         Logger.info(f"user {ctx.author.id} ({ctx.author.display_name}) invoked /profile")
 
-        ctx.defer()
+        await ctx.defer()
 
         discord_user_id = ctx.author.id
         profile: UserProfile = None

@@ -22,7 +22,7 @@ class EmbedBuilder:
         self.footer = ""
         self.footer_image_url = ""
         self.fields = []
-    def build(self):
+    def build(self) -> Embed:
         return Embed(
             title=self.title,
             description=self.contents,

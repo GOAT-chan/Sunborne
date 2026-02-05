@@ -60,6 +60,23 @@ def get_beatmap_cover_image_url(set_id: int, diff_id: int = None) -> str:
         url += f"?{diff_id}"
     return url
 
+def beatmap_status_name_to_emoji(name: str) -> str:
+    match(name):
+        case "Ranked":
+            return get_config().emojis.ranked
+        case "Approved":
+            return get_config().emojis.approved
+        case "Qualified":
+            return get_config().emojis.qualified
+        case "Loved":
+            return get_config().emojis.loved
+        case "Pending":
+            return get_config().emojis.pending
+        case "Wip":
+            return get_config().emojis.wip
+        case "Graveyard" | "Unknown":
+            return get_config().emojis.graveyard
+
 def grade_to_emoji(grade: str) -> str:
     match(grade):
         case "XH":

@@ -6,24 +6,7 @@ from models.status import ServerStatus
 from utils.config import get_config
 from utils.embeds import EmbedBuilder
 from utils.logger import Logger
-from utils.misc import get_beatmap_cover_image_url, get_ruleset_icon_url, grade_to_emoji, map_sunrise_gamemode_to_sunborne
-
-def beatmap_status_name_to_emoji(name: str) -> str:
-    match(name):
-        case "Ranked":
-            return get_config().emojis.ranked
-        case "Approved":
-            return get_config().emojis.approved
-        case "Qualified":
-            return get_config().emojis.qualified
-        case "Loved":
-            return get_config().emojis.loved
-        case "Pending":
-            return get_config().emojis.pending
-        case "Wip":
-            return get_config().emojis.wip
-        case "Graveyard" | "Unknown":
-            return get_config().emojis.graveyard
+from utils.misc import beatmap_status_name_to_emoji, get_beatmap_cover_image_url, get_ruleset_icon_url, grade_to_emoji, map_sunrise_gamemode_to_sunborne
 
 async def send_status_message(channel: TYPE_ALL_CHANNEL, status: ServerStatus = None):
     embed = EmbedBuilder()

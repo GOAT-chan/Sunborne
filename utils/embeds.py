@@ -29,6 +29,7 @@ class EmbedBuilder:
     def build(self) -> Embed:
         return Embed(
             title=self.title,
+            url=self.title_url,
             description=self.contents,
             color=Color.from_hex(self.color),
             author=EmbedAuthor(

@@ -3,6 +3,7 @@ from interactions import Embed, Color, EmbedAttachment, EmbedAuthor, EmbedFooter
 class EmbedBuilder:
     header: str
     header_image_url: str
+    header_url: str
     thumbnail_image_url: str
     image_url: str
     title: str
@@ -14,6 +15,7 @@ class EmbedBuilder:
     def __init__(self):
         self.header = ""
         self.header_image_url = ""
+        self.header_url = ""
         self.thumbnail_image_url = ""
         self.image_url = ""
         self.title = ""
@@ -29,7 +31,8 @@ class EmbedBuilder:
             color=Color.from_hex(self.color),
             author=EmbedAuthor(
                 name=self.header,
-                icon_url=self.header_image_url
+                icon_url=self.header_image_url,
+                url=self.header_url
             ),
             thumbnail=self.thumbnail_image_url,
             images=[
@@ -41,10 +44,11 @@ class EmbedBuilder:
             ),
             fields=self.fields
         )
-    def set_header(self, text: str, image_url: str = ""):
+    def set_header(self, text: str, image_url: str = None, url: str = None):
         self.header = text
         self.header_image_url = image_url
-    def set_footer(self, text: str, image_url: str = ""):
+        self.header_url = url
+    def set_footer(self, text: str, image_url: str = None):
         self.footer = text
         self.footer_image_url = image_url
     def set_thumbnail_image(self, url: str):

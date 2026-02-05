@@ -1,7 +1,7 @@
 {
     "health_check_interval": 60,
     "event_query_interval": 5,
-    "only_send_health_check_embed_when_failed": false,
+    "only_send_health_check_embed_when_failed": true,
     "embed_colors": {
         "success": "#30c779",
         "error": "#a64d3f",

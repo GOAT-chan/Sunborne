@@ -43,6 +43,7 @@ class Emojis(BaseModel):
     approved: str
     qualified: str
     loved: str
+    pending: str
     wip: str
     graveyard: str
     acc: str

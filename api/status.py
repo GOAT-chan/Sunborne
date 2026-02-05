@@ -2,7 +2,6 @@ from api.helper.base import get_status
 from models.status import ServerStatus
 from utils.logger import Logger
 
-
 async def get_server_status() -> ServerStatus | None:
     r = await get_status()
     if not r:

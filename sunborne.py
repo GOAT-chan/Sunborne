@@ -1,3 +1,4 @@
+import asyncio
 import os
 import traceback
 
@@ -5,9 +6,9 @@ from api.status import get_server_status
 from utils.logger import Logger
 from utils.config import get_config, load_config
 from database.manager import create_db
-from interactions import Client, Intents, listen, Task, IntervalTrigger
-
-from utils.misc import send_status_message
+from interactions import BaseTrigger, Client, Intents, listen, Task, IntervalTrigger
+from utils.messages import send_status_message
+from utils.websocket import handle_websocket
 
 bot = Client(intents=Intents.DEFAULT)
 
@@ -31,8 +32,7 @@ async def on_ready():
     if os.environ.get("SUNBORNE_DEBUG"):
         Logger.warn("debug logging is ENABLED, this might affect performance!")
     health_check.start()
-    Logger.info(f"will perform health check every {get_config().health_check_interval} second(s)")
-    Logger.info(f"will query websocket every {get_config().event_query_interval} second(s)")
+    asyncio.create_task(handle_websocket(bot.get_channel(get_config().channels.score_submission), bot.get_channel(get_config().channels.score_submission)))
     if get_config().channels.health_check and not get_config().only_send_health_check_embed_when_failed:
         Logger.warn(f"bot will ALWAYS send server status messages regardless of queried status!")
         Logger.warn(f"to avoid unnecessary clutter, consider enabling \"only_send_health_check_embed_when_failed\"")

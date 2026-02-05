@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from interactions import TYPE_ALL_CHANNEL
@@ -24,7 +25,12 @@ async def recv_callback(data: Any, score_channel: TYPE_ALL_CHANNEL, beatmap_chan
 async def handle_websocket(score_channel: TYPE_ALL_CHANNEL, beatmap_channel: TYPE_ALL_CHANNEL):
     Logger.info("initializing websocket connection...")
     while True:
-        async with websockets.connect(f"wss://api.{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/ws",
-                                      ping_interval=get_config().event_query_interval) as ws:
-            async for msg in ws:
-                await recv_callback(msg, score_channel, beatmap_channel)
+        try:
+            async with websockets.connect(f"wss://api.{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/ws",
+                                          ping_interval=get_config().event_query_interval) as ws:
+                async for msg in ws:
+                    await recv_callback(msg, score_channel, beatmap_channel)
+        except Exception as ex:
+            Logger.err(f"websocker connect closed with error: {ex}, reconnecting...")
+            await asyncio.sleep(get_config().event_query_interval)
+            continue

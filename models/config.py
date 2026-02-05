@@ -1,3 +1,4 @@
+from turtle import st
 from pydantic import BaseModel, Field
 
 class Config(BaseModel):
@@ -14,6 +15,8 @@ class EmbedColors(BaseModel):
     error: str
     info: str
     privileged: str
+    new_score: str
+    beatmap_status_change: str
 
 class Channels(BaseModel):
     beatmap_status: int | None
@@ -36,3 +39,14 @@ class Emojis(BaseModel):
     dev_role: str
     admin_role: str
     bat_role: str
+    ranked: str
+    approved: str
+    qualified: str
+    loved: str
+    wip: str
+    graveyard: str
+    acc: str
+    ar: str
+    cs: str
+    hp_drain: str
+    sr: str

@@ -6,7 +6,9 @@
         "success": "#30c779",
         "error": "#a64d3f",
         "info": "#253745",
-        "privileged": "#4b2b52"
+        "privileged": "#4b2b52",
+        "new_score": "#23abad",
+        "beatmap_status_change": "#d14182"
     },
     "channels": {
         "beatmap_status": 727,
@@ -14,18 +16,31 @@
         "health_check": 727
     },
     "emojis": {
-        "xh_rank": "xh_rank",
-        "x_rank": "x_rank",
-        "sh_rank": "sh_rank",
-        "s_rank": "s_rank",
-        "a_rank": "a_rank",
-        "300": "300",
-        "100": "100",
-        "50": "50",
-        "miss": "miss",
-        "bat_role": ":musical_note:",
-        "dev_role": "dev_role",
-        "admin_role": ":shield:"
+        "xh_rank": "",
+        "x_rank": "",
+        "sh_rank": "",
+        "s_rank": "",
+        "a_rank": "",
+        "300": "",
+        "100": "",
+        "50": "",
+        "miss": "",
+        "bat_role": "",
+        "dev_role": "",
+        "admin_role": "",
+        "ranked": "",
+        "approved": "",
+        "qualified": "",
+        "loved": "",
+        "wip": "",
+        "pending": "",
+        "graveyard": "",
+        "acc": "",
+        "ar": "",
+        "cs": "",
+        "hp_drain": "",
+        "sr": ""
+
     },
     "privileged_users": []
 }

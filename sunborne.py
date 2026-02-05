@@ -24,7 +24,6 @@ async def health_check():
     else:
         Logger.err("health check failed")
     if get_config().channels.health_check:
-        Logger.verbose(f"trying to send health check embed to channel {get_config().channels.health_check}")
         await send_status_message(bot.get_channel(get_config().channels.health_check), status)
 
 @listen()

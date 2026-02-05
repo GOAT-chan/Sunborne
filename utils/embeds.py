@@ -7,6 +7,7 @@ class EmbedBuilder:
     thumbnail_image_url: str
     image_url: str
     title: str
+    title_url: str
     contents: str
     color: str
     footer: str
@@ -19,6 +20,7 @@ class EmbedBuilder:
         self.thumbnail_image_url = ""
         self.image_url = ""
         self.title = ""
+        self.title_url = ""
         self.contents = ""
         self.color = ""
         self.footer = ""
@@ -55,8 +57,9 @@ class EmbedBuilder:
         self.thumbnail_image_url = url
     def set_image(self, url: str):
         self.image_url = url
-    def set_title(self, title: str):
+    def set_title(self, title: str, url: str = None):
         self.title = title
+        self.title_url = url
     def set_color(self, color: str):
         self.color = color
     def add_content(self, msg: str):

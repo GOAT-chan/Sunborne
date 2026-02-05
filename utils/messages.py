@@ -1,3 +1,5 @@
+import os
+
 from datetime import datetime
 from interactions import TYPE_ALL_CHANNEL
 from api.beatmap import get_beatmap_data
@@ -22,6 +24,7 @@ async def send_status_message(channel: TYPE_ALL_CHANNEL, status: ServerStatus = 
         embed.add_field("Score Submitted", str(status.scores_submitted), True)
         embed.add_field("Maintenance?", str(status.maintenance))
     if not status or status and not get_config().only_send_health_check_embed_when_failed:
+        Logger.verbose(f"trying to send health check embed to channel {get_config().channels.health_check}")
         await channel.send(embed=embed.build())
 
 async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
@@ -29,10 +32,10 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
     profile = await get_complete_user_profile(ws_data['user']['user_id'], beatmap_data.mode_name)
     embed = EmbedBuilder()
     embed.set_color(get_config().embed_colors.new_score)
-    embed.set_header(f"{profile.user_name} (#{profile.stats.global_rank} - #{profile.stats.country_rank}{profile.country_code})", profile.avatar_url)
+    embed.set_header(f"{profile.user_name} (#{profile.stats.global_rank} - #{profile.stats.country_rank}{profile.country_code})", profile.avatar_url, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{profile.user_id}?mode={beatmap_data.mode_name}")
     embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(profile.stats.gamemode)}", get_ruleset_icon_url(profile.stats.gamemode))
     embed.set_thumbnail_image(get_beatmap_cover_image_url(beatmap_data.set_id, beatmap_data.diff_id))
-    embed.set_title(f"{beatmap_status_name_to_emoji(beatmap_data.status)} {beatmap_data.artist} - {beatmap_data.title} [{beatmap_data.diff}] ({round(beatmap_data.sr, 2)} {get_config().emojis.sr})")
+    embed.set_title(f"{beatmap_status_name_to_emoji(beatmap_data.status)} {beatmap_data.artist} - {beatmap_data.title} [{beatmap_data.diff}] ({round(beatmap_data.sr, 2)} {get_config().emojis.sr})", f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}")
     embed.add_content(f"{grade_to_emoji(ws_data['grade'])} {str(ws_data['mods']).replace("None", "")} (<t:{round(datetime.fromisoformat(ws_data['when_played']).timestamp())}:R>)")
     embed.add_field("Score", f"{ws_data['total_score']:,}", True)
     embed.add_field("Accuracy", f"{round(ws_data['accuracy'], 2)}%", True)

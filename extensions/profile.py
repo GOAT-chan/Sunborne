@@ -1,11 +1,14 @@
 from api.user import get_complete_user_profile
+from database.manager import DbSession
+from database.models.user import User
 from models.user import UserProfile
 from utils.logger import Logger
 from utils.embeds import EmbedBuilder
 from utils.config import get_config
-from utils.db import find_linked_profile
+from utils.db import check_if_user_id_is_claimed, find_linked_profile
 from utils.misc import get_badges, get_ruleset_icon_url, map_sunrise_gamemode_to_sunborne
 from interactions import Extension, SlashContext, OptionType, Member, SlashCommandChoice, slash_command, slash_option
+from datetime import datetime
 
 class ProfileExtension(Extension):
     @slash_command(name="profile",
@@ -68,10 +71,10 @@ class ProfileExtension(Extension):
             profile = await get_complete_user_profile(user_id, game_mode)
 
         # handle discord
-        if discord and not profile:
-            linked = find_linked_profile(discord_user_id)
+        if not profile:
+            linked = await find_linked_profile(discord_user_id)
             if linked:
-                profile = await get_complete_user_profile(linked.user_id)
+                profile = await get_complete_user_profile(linked.user_id, game_mode)
         
         # show error if couldn't find anything
         if not profile:
@@ -96,4 +99,94 @@ class ProfileExtension(Extension):
             embed.add_field("pp", str(round(profile.stats.total_pp)), True)
 
         # send embed
+        await ctx.send(embed=embed.build())
+
+    @slash_command(name="link",
+                   description="Link your GOAT-chan profile")
+    @slash_option(name="user_id",
+                  description="User ID",
+                  required=True,
+                  opt_type=OptionType.INTEGER)
+    async def link_command(self, ctx: SlashContext, user_id: int):
+        Logger.info(f"user {ctx.author.id} ({ctx.author.display_name}) invoked /linked")
+
+        await ctx.defer()
+
+        linked_profile = await find_linked_profile(ctx.author.id)
+
+        embed = EmbedBuilder()
+
+        # stop if user linked already
+        if linked_profile:
+            embed.set_color(get_config().embed_colors.error)
+            embed.set_title("You've already linked!")
+            embed.add_content("If you messed up and linked the wrong profile, please manually unlink yourself using `/unlink`, then run `/link` again.\n")
+            embed.add_content("Please only link ***your*** GOAT-chan profile.")
+            await ctx.send(embed=embed.build())
+            return
+        
+        # check if there's a discord user linked with this id yet
+        if await check_if_user_id_is_claimed(user_id):
+            embed.set_color(get_config().embed_colors.error)
+            embed.set_title("Sorry, this profile is linked to another Discord user.")
+            embed.add_content("Please make sure the user ID you entered corresponds to your GOAT-chan profile.\n")
+            embed.add_content("If you are sure that you've entered the correct profile ID, contact a moderator.")
+            await ctx.send(embed=embed.build())
+            return
+        
+        profile = await get_complete_user_profile(user_id)
+        
+        # link
+        user = User()
+        user.discord_id = ctx.author.id
+        user.user_id = profile.user_id
+        user.user_name = profile.user_name
+        user.linked_date = datetime.now()
+        user.card_style = 0
+        user.embed_style = 0
+
+        # add to db
+        session = DbSession()
+        await session.add_or_update(user)
+        await session.close()
+
+        # config embed
+        embed.set_color(get_config().embed_colors.success)
+        embed.set_title("Linked successfully!")
+        embed.set_thumbnail_image(profile.avatar_url)
+        embed.add_content(f"Your Discord account was successfully linked to **{profile.user_name}**!")
+
+        # send
+        await ctx.send(embed=embed.build())
+
+    @slash_command(name="unlink",
+                   description="Unlink your GOAT-chan profile")
+    async def unlink_command(self, ctx: SlashContext):
+        Logger.info(f"user {ctx.author.id} ({ctx.author.display_name}) invoked /unlink")
+
+        await ctx.defer()
+
+        linked_profile = await find_linked_profile(ctx.author.id)
+
+        embed = EmbedBuilder()
+
+        # stop if user havent linked yet
+        if not linked_profile:
+            embed.set_color(get_config().embed_colors.error)
+            embed.set_title("You haven't linked your profile yet!")
+            embed.add_content("You can't unlink a profile that you haven't linked yet :wilted_rose:")
+            await ctx.send(embed=embed.build())
+            return
+
+        # remove from db
+        session = DbSession()
+        await session.remove(linked_profile)
+        await session.close()
+
+        # config embed
+        embed.set_color(get_config().embed_colors.success)
+        embed.set_title("Unlinked successfully!")
+        embed.add_content(f"Your Discord account is no longer linked to **{linked_profile.user_name}**.")
+
+        # send
         await ctx.send(embed=embed.build())

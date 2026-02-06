@@ -1,3 +1,4 @@
+aiosqlite==0.22.1
 cacheout==0.16.0
 discord-py-interactions==5.16.0
 httpx==0.28.1

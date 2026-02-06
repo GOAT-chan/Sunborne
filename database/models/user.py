@@ -6,4 +6,5 @@ class User(SQLModel, table=True):
     user_id: int
     discord_id: int
     linked_date: int
-    default_gamemode: str
+    card_style: int | None = Field(default=None)
+    embed_style: int | None = Field(default=None)

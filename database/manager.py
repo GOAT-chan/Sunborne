@@ -1,15 +1,16 @@
 import os
 
-from utils.config import get_config
 from utils.logger import Logger
-from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel import SQLModel
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio.engine import create_async_engine
 from sqlalchemy import ScalarResult
 from database.models.user import User
 
 DATABASE_PATH = os.path.join(os.getcwd(), "data", "sunborne.db")
-SQL_URL = f"sqlite:///{DATABASE_PATH}"
+SQL_URL = f"sqlite+aiosqlite:///{DATABASE_PATH}"
 
-engine = create_engine(SQL_URL)
+engine = create_async_engine(SQL_URL)
 
 def create_db():
     if not os.path.isfile(DATABASE_PATH):
@@ -20,17 +21,16 @@ def create_db():
         Logger.verbose("database already exists, loading that...")
 
 class DbSession:
-    session: Session
+    session: AsyncSession
     def __init__(self):
-        self.session = Session(engine)
-    def add_or_update(self, user: User) -> User:
+        self.session = AsyncSession(engine)
+    async def add_or_update(self, user: User):
         self.session.add(user)
-        self.session.commit()
-        return user
-    def remove(self, user: User) -> None:
-        self.session.delete(user)
-        self.session.commit()
-    def execute_sql(self, statement: str) -> ScalarResult:
-        return self.session.exec(statement)
-    def close(self):
-        self.session.close()
+        await self.session.commit()
+    async def remove(self, user: User):
+        await self.session.delete(user)
+        await self.session.commit()
+    async def execute_sql(self, statement: str) -> ScalarResult:
+        return await self.session.exec(statement)
+    async def close(self):
+        await self.session.close()

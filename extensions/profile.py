@@ -91,7 +91,7 @@ class ProfileExtension(Extension):
             embed.set_header(f"{profile.user_name} ({profile.status})", f"https://flagsapi.com/{profile.country_code}/flat/64.png")
             embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(profile.stats.gamemode)}", get_ruleset_icon_url(profile.stats.gamemode))
             embed.add_field("Registered", f"<t:{round(profile.registration_date.timestamp())}:D>", True)
-            embed.add_field("Last Online", f"<t:{round(profile.last_online.timestamp())}:D>", True)
+            embed.add_field("Last Online", f"<t:{round(profile.last_online.timestamp())}:R>", True)
             embed.add_field("Ranking", f"#{profile.stats.global_rank} (#{profile.stats.country_rank})", True)
             embed.add_field("Grades", f"{get_config().emojis.xh_rank} {profile.stats.grades.rank_xh} {get_config().emojis.x_rank} {profile.stats.grades.rank_x} {get_config().emojis.sh_rank} {profile.stats.grades.rank_sh} {get_config().emojis.s_rank} {profile.stats.grades.rank_s} {get_config().emojis.a_rank} {profile.stats.grades.rank_a}")
             embed.add_field("Roles", get_badges(profile.badges), True)

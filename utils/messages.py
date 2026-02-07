@@ -52,7 +52,7 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
 
 async def send_beatmap_status_change_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
     beatmap_data = await get_beatmap_data(ws_data['beatmap']['id'])
-    profile = await get_complete_user_profile(ws_data['bat']['username'])
+    profile = await get_complete_user_profile(ws_data['bat']['user_id'])
     embed = EmbedBuilder()
     embed.set_color(get_config().embed_colors.beatmap_status_change)
     embed.set_header(profile.user_name, profile.avatar_url, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{profile.user_id}")

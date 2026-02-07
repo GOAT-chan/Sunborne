@@ -1,4 +1,4 @@
-from api.helper.beatmap import get_beatmap
+from api.helper.beatmap import get_beatmap, get_beatmap_pp
 from models.beatmap import Beatmap
 from utils.logger import Logger
 from utils.cache import get_from_cache, put_to_cache
@@ -11,6 +11,7 @@ async def get_beatmap_data(id: int) -> Beatmap | None:
         Logger.verbose("cache hit!")
         return get_from_cache(cache_key)
     r = await get_beatmap(id)
+    r_pp = await get_beatmap_pp(id)
     Logger.verbose(f"raw beatmap data: {r}")
     beatmap = Beatmap()
     beatmap.set_id = r['beatmapset_id']
@@ -26,26 +27,30 @@ async def get_beatmap_data(id: int) -> Beatmap | None:
     match(beatmap.mode_id):
         # standard (+RX/AP/SV2)
         case 0 | 4 | 8 | 12:
-            beatmap.sr = r['star_rating_osu']
+            beatmap.stats.sr = r['star_rating_osu']
         # mania (+SV2)
         case 3 | 15:
-            beatmap.sr = r['star_rating_mania']
+            beatmap.stats.sr = r['star_rating_mania']
         # taiko (+RX/SV2)
         case 1 | 5 | 13:
-            beatmap.sr = r['star_rating_taiko']
+            beatmap.stats.sr = r['star_rating_taiko']
         # ctb (+RX/SV2)
         case 2 | 6 | 14:
-            beatmap.sr = r['star_rating_ctb']
+            beatmap.stats.sr = r['star_rating_ctb']
     beatmap.status = r['status']
-    beatmap.max_combo = r['max_combo']
-    beatmap.circle_count = r['count_circles']
-    beatmap.slider_count = r['count_sliders']
-    beatmap.spinner_count = r['count_spinners']
-    beatmap.ar = r['ar']
-    beatmap.cs = r['cs']
-    beatmap.hp_drain = r['drain']
-    beatmap.od = r['accuracy']
-    beatmap.bpm = r['bpm']
+    beatmap.stats.max_combo = r['max_combo']
+    beatmap.stats.circle_count = r['count_circles']
+    beatmap.stats.slider_count = r['count_sliders']
+    beatmap.stats.spinner_count = r['count_spinners']
+    beatmap.stats.ar = r['ar']
+    beatmap.stats.cs = r['cs']
+    beatmap.stats.drain = r['drain']
+    beatmap.stats.od = r['accuracy']
+    beatmap.stats.bpm = r['bpm']
+    beatmap.stats.pp = r_pp['pp']
+    beatmap.stats.pp_aim = r_pp['ppAim']
+    beatmap.stats.pp_acc = r_pp['ppAccuracy']
+    beatmap.stats.pp_speed = r_pp['ppSpeed']
     Logger.verbose(f"putting into cache...")
     put_to_cache(cache_key, beatmap)
     return beatmap

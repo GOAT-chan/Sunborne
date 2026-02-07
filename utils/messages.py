@@ -63,7 +63,7 @@ async def send_beatmap_status_change_message(channel: TYPE_ALL_CHANNEL, ws_data:
     embed.add_field("Ranking Status", f"{beatmap_status_name_to_emoji(ws_data['old_status'])} **{ws_data['old_status']}**  >>  {beatmap_status_name_to_emoji(ws_data['new_status'])} **{ws_data['new_status']}**")
     embed.add_field("Circle Size", str(beatmap_data.stats.cs), True)
     embed.add_field("Approach Rate", str(beatmap_data.stats.ar), True)
-    embed.add_field("Accuracy", str(beatmap_data.od), True)
+    embed.add_field("Accuracy", str(beatmap_data.stats.od), True)
     embed.add_field("Length", f"{datetime.fromtimestamp(beatmap_data.length).strftime("%M:%S")}", True)
     embed.add_field("BPM", str(beatmap_data.stats.bpm), True)
     embed.add_field("HP Drain", str(beatmap_data.stats.drain), True)

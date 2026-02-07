@@ -48,9 +48,13 @@ async def get_beatmap_data(id: int) -> Beatmap | None:
     beatmap.stats.od = r['accuracy']
     beatmap.stats.bpm = r['bpm']
     beatmap.stats.pp = r_pp['pp']
-    beatmap.stats.pp_aim = r_pp['ppAim']
-    beatmap.stats.pp_acc = r_pp['ppAccuracy']
-    beatmap.stats.pp_speed = r_pp['ppSpeed']
+    try:
+        beatmap.stats.pp_aim = r_pp['ppAim']
+        beatmap.stats.pp_acc = r_pp['ppAccuracy']
+        beatmap.stats.pp_speed = r_pp['ppSpeed']
+    except KeyError as ex:
+        Logger.verbose(f"couldn't get key {ex}, probably non-std gamemode")
+        pass
     Logger.verbose(f"putting into cache...")
     put_to_cache(cache_key, beatmap)
     return beatmap

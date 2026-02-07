@@ -70,3 +70,7 @@ class Emojis(BaseModel):
     wip: str
     graveyard: str
     sr: str
+    std_gm: str
+    mania_gm: str
+    taiko_gm: str
+    ctb_gm: str

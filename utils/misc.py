@@ -54,6 +54,17 @@ def get_ruleset_icon_url(gamemode: str) -> str:
         case "CatchTheBeat" | "RelaxCatchTheBeat" | "ScoreV2CatchTheBeat":
             return "https://raw.githubusercontent.com/ppy/osu-resources/refs/heads/master/osu.Game.Resources/Textures/Icons/RulesetCatch.png"
         
+def get_ruleset_icon_emoji(gamemode: str) -> str:
+    match(gamemode):
+        case "Standard" | "RelaxStandard" | "AutopilotStandard" | "ScoreV2Standard":
+            return get_config().emojis.std_gm
+        case "Mania" | "ScoreV2Standard":
+            return get_config().emojis.mania_gm
+        case "Taiko" | "RelaxTaiko" | "ScoreV2Taiko":
+            return get_config().emojis.taiko_gm
+        case "CatchTheBeat" | "RelaxCatchTheBeat" | "ScoreV2CatchTheBeat":
+            return get_config().emojis.ctb_gm
+        
 def get_beatmap_cover_image_url(set_id: int, diff_id: int = None) -> str:
     url = f"https://assets.ppy.sh/beatmaps/{set_id}/covers/list.jpg"
     if diff_id:

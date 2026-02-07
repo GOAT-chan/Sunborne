@@ -41,6 +41,9 @@
         "sh_rank": "",
         "s_rank": "",
         "a_rank": "",
+        "b_rank": "",
+        "c_rank": "",
+        "d_rank": "",
         "300": "",
         "100": "",
         "50": "",
@@ -55,8 +58,11 @@
         "wip": "",
         "pending": "",
         "graveyard": "",
-        "sr": ""
-
+        "sr": "",
+        "std_gm": "",
+        "mania_gm": "",
+        "taiko_gm": "",
+        "ctb_gm": ""
     },
     "privileged_users": []
 }

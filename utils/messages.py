@@ -1,14 +1,14 @@
 import os
 
 from datetime import datetime
-from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle
+from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle, GuildForum
 from api.beatmap import get_beatmap_data
 from api.user import get_complete_user_profile
 from models.status import ServerStatus
 from utils.config import get_config
 from utils.embeds import EmbedBuilder
 from utils.logger import Logger
-from utils.misc import beatmap_status_name_to_emoji, get_beatmap_cover_image_url, get_ruleset_icon_url, grade_to_emoji, map_sunrise_gamemode_to_sunborne
+from utils.misc import beatmap_status_name_to_emoji, get_beatmap_cover_image_url, get_gamemode_tag_from_config, get_ranking_status_tag_from_config, get_ruleset_icon_url, grade_to_emoji, map_sunrise_gamemode_to_sunborne
 
 async def send_status_message(channel: TYPE_ALL_CHANNEL, status: ServerStatus = None):
     embed = EmbedBuilder()
@@ -35,12 +35,12 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
     embed.set_header(f"{profile.user_name} (#{profile.stats.global_rank} - #{profile.stats.country_rank}{profile.country_code})", profile.avatar_url, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{profile.user_id}?mode={beatmap_data.mode_name}")
     embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(profile.stats.gamemode)}", get_ruleset_icon_url(profile.stats.gamemode))
     embed.set_thumbnail_image(get_beatmap_cover_image_url(beatmap_data.set_id, beatmap_data.diff_id))
-    embed.set_title(f"{beatmap_status_name_to_emoji(beatmap_data.status)} {beatmap_data.artist} - {beatmap_data.title} [{beatmap_data.diff}] ({round(beatmap_data.sr, 2)} {get_config().emojis.sr})", f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}")
+    embed.set_title(f"{beatmap_status_name_to_emoji(beatmap_data.status)} {beatmap_data.artist} - {beatmap_data.title} [{beatmap_data.diff}] ({round(beatmap_data.stats.sr, 2)} {get_config().emojis.sr})", f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}")
     embed.add_content(f"{grade_to_emoji(ws_data['grade'])} {str(ws_data['mods']).replace("None", "")} (<t:{round(datetime.fromisoformat(ws_data['when_played']).timestamp())}:R>)")
     embed.add_field("Score", f"{ws_data['total_score']:,}", True)
     embed.add_field("Accuracy", f"{round(ws_data['accuracy'], 2)}%", True)
     embed.add_field("pp", str(round(ws_data['performance_points'], 2)), True)
-    embed.add_field("Combo", f"**x{ws_data['max_combo']}** / {beatmap_data.max_combo}", True)
+    embed.add_field("Combo", f"**x{ws_data['max_combo']}** / {beatmap_data.stats.max_combo}", True)
     embed.add_field("Stats", f"{get_config().emojis.judge_300} {(ws_data['count_300'] + ws_data['count_geki'])} · {get_config().emojis.judge_100} {(ws_data['count_100'] + ws_data['count_katu'])} · {get_config().emojis.judge_50} {ws_data['count_50']} · {get_config().emojis.judge_miss} {ws_data['count_miss']}", True)
     Logger.verbose("sending new score submission embed")
     score_button = Button(
@@ -50,28 +50,49 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
     )
     await channel.send(embed=embed.build(), components=[score_button])
 
-async def send_beatmap_status_change_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
+async def send_beatmap_status_change_message(channel: GuildForum, ws_data: dict):
     beatmap_data = await get_beatmap_data(ws_data['beatmap']['id'])
     profile = await get_complete_user_profile(ws_data['bat']['user_id'])
     embed = EmbedBuilder()
     embed.set_color(get_config().embed_colors.beatmap_status_change)
-    embed.set_header(profile.user_name, profile.avatar_url, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{profile.user_id}")
-    embed.set_thumbnail_image(get_beatmap_cover_image_url(beatmap_data.set_id, beatmap_data.diff_id))
-    embed.set_title("Beatmap ranking status change")
-    embed.add_content(f"{beatmap_data.artist} - {beatmap_data.title} [{beatmap_data.diff}] ({round(beatmap_data.stats.sr, 2)} {get_config().emojis.sr})")
-    embed.add_content(f"Mapped by **{beatmap_data.mapper}**")
-    embed.add_field("Ranking Status", f"{beatmap_status_name_to_emoji(ws_data['old_status'])} **{ws_data['old_status']}**  >>  {beatmap_status_name_to_emoji(ws_data['new_status'])} **{ws_data['new_status']}**")
+    embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(beatmap_data.mode_name)}", get_ruleset_icon_url(beatmap_data.mode_name))
+    embed.set_title(beatmap_data.diff, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}")
+    embed.add_content(f"{round(beatmap_data.stats.sr, 2)} {get_config().emojis.sr}")
     embed.add_field("Circle Size", str(beatmap_data.stats.cs), True)
     embed.add_field("Approach Rate", str(beatmap_data.stats.ar), True)
     embed.add_field("Accuracy", str(beatmap_data.stats.od), True)
     embed.add_field("Length", f"{datetime.fromtimestamp(beatmap_data.length).strftime("%M:%S")}", True)
     embed.add_field("BPM", str(beatmap_data.stats.bpm), True)
     embed.add_field("HP Drain", str(beatmap_data.stats.drain), True)
-    embed.add_field(f"pp for {get_config().emojis.x_rank}", f"{round(beatmap_data.stats.pp, 2)}", True)
-    Logger.verbose("sending beatmap ranking status change embed")
-    beatmap_button = Button(
-        style=ButtonStyle.URL,
-        label="View beatmap",
-        url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}"
-    )
-    await channel.send(embed=embed.build(), components=[beatmap_button])
+    embed.add_field(f"pp for {get_config().emojis.x_rank}", f"{round(beatmap_data.stats.pp)}", True)
+
+    post_name = f"{beatmap_data.artist} - {beatmap_data.title} ({beatmap_data.set_id})"
+
+    # get list of posts, and check if a post for this beatmap set already exist
+    posts = channel.get_posts()
+
+    post = next((p for p in posts if p.name == post_name), None)
+
+    if not post:
+        Logger.verbose(f"no post for beatmap set {beatmap_data.set_id} exist yet, creating new one")
+        info_embed = EmbedBuilder()
+        info_embed.set_color(get_config().embed_colors.beatmap_status_change)
+        info_embed.set_title("Beatmap ranking status change")
+        info_embed.set_header(profile.user_name, profile.avatar_url, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{profile.user_id}")
+        info_embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(beatmap_data.mode_name)}", get_ruleset_icon_url(beatmap_data.mode_name))
+        info_embed.set_thumbnail_image(get_beatmap_cover_image_url(beatmap_data.set_id))
+        info_embed.add_field("Mapper", beatmap_data.mapper, True)
+        info_embed.add_field("Status Change", f"{beatmap_status_name_to_emoji(ws_data['old_status'])} **{ws_data['old_status']}**  >>  {beatmap_status_name_to_emoji(ws_data['new_status'])} **{ws_data['new_status']}**", True)
+        beatmap_button = Button(style=ButtonStyle.URL,
+                                label="View beatmap",
+                                url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}")
+        post = await channel.create_post(name=post_name,
+                                         content="",
+                                         applied_tags=[
+                                            channel.get_tag(get_gamemode_tag_from_config(beatmap_data.mode_name)),
+                                            channel.get_tag(get_ranking_status_tag_from_config(ws_data['new_status']))
+                                         ],
+                                         components=[beatmap_button],
+                                         embed=info_embed.build())
+    
+    await post.send(embed=embed.build())

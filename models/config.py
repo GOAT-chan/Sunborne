@@ -18,10 +18,33 @@ class EmbedColors(BaseModel):
     new_score: str
     beatmap_status_change: str
 
+class BeatmapRankingTag(BaseModel):
+    ranked: str
+    loved: str
+
+class BeatmapGamemodeTag(BaseModel):
+    std: str = Field(alias="Standard")
+    rx_std: str = Field(alias="RelaxStandard")
+    ap_std: str = Field(alias="AutopilotStandard")
+    sv2_std: str = Field(alias="ScoreV2Standard")
+    mania: str = Field(alias="Mania")
+    sv2_mania: str = Field(alias="ScoreV2Mania")
+    taiko: str = Field(alias="Taiko")
+    rx_taiko: str = Field(alias="RelaxTaiko")
+    sv2_taiko: str = Field(alias="ScoreV2Taiko")
+    ctb: str = Field(alias="CatchTheBeat")
+    rx_ctb: str = Field(alias="RelaxCatchTheBeat")
+    sv2_ctb: str = Field(alias="ScoreV2CatchTheBeat")
+
+class BeatmapTag(BaseModel):
+    status: BeatmapRankingTag
+    gamemode: BeatmapGamemodeTag
+
 class Channels(BaseModel):
     beatmap_status: int | None
     score_submission: int | None
     health_check: int | None
+    beatmap_status_post_tags: BeatmapTag
 
 class Emojis(BaseModel):
     xh_rank: str

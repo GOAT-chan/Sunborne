@@ -8,12 +8,32 @@
         "info": "#253745",
         "privileged": "#4b2b52",
         "new_score": "#23abad",
-        "beatmap_status_change": "#d14182"
+        "beatmap_status_change": "#ac9fe6"
     },
     "channels": {
         "beatmap_status": 727,
         "score_submission": 727,
-        "health_check": 727
+        "health_check": 727,
+        "beatmap_status_post_tags": {
+            "status": {
+                "ranked": "Ranked",
+                "loved": "Loved"
+            },
+            "gamemode": {
+                "Standard": "osu!",
+                "RelaxStandard": "osu! (+RX)",
+                "AutopilotStandard": "osu! (+AP)",
+                "ScoreV2Standard": "osu! (+SV2)",
+                "Mania": "osu!mania",
+                "ScoreV2Mania": "osu!mania (+SV2)",
+                "Taiko": "osu!taiko",
+                "RelaxTaiko": "osu!taiko (+RX)",
+                "ScoreV2Taiko": "osu!taiko (+SV2)",
+                "CatchTheBeat": "osu!catch",
+                "RelaxCatchTheBeat": "osu!catch (+RX)",
+                "ScoreV2CatchTheBeat": "osu!catch (+SV2)"
+            }
+        }
     },
     "emojis": {
         "xh_rank": "",

@@ -31,7 +31,7 @@ async def on_ready():
     if os.environ.get("SUNBORNE_DEBUG"):
         Logger.warn("debug logging is ENABLED, this might affect performance!")
     health_check.start()
-    asyncio.create_task(handle_websocket(bot.get_channel(get_config().channels.score_submission), bot.get_channel(get_config().channels.score_submission)))
+    asyncio.create_task(handle_websocket(bot.get_channel(get_config().channels.score_submission), bot.get_channel(get_config().channels.beatmap_status)))
     if get_config().channels.health_check and not get_config().only_send_health_check_embed_when_failed:
         Logger.warn(f"bot will ALWAYS send server status messages regardless of queried status!")
         Logger.warn(f"to avoid unnecessary clutter, consider enabling \"only_send_health_check_embed_when_failed\"")

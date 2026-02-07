@@ -7,6 +7,7 @@ class Beatmap:
     mapper: str
     artist: str
     diff: str
+    length: int
     mode_id: int
     mode_name: str
     last_updated: datetime
@@ -28,6 +29,7 @@ class Beatmap:
         self.mapper = ""
         self.artist = ""
         self.diff = ""
+        self.length = 0
         self.mode_id = 0
         self.mode_name = ""
         self.last_updated = datetime.now()

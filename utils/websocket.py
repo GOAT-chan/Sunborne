@@ -31,6 +31,6 @@ async def handle_websocket(score_channel: TYPE_ALL_CHANNEL, beatmap_channel: TYP
                 async for msg in ws:
                     await recv_callback(msg, score_channel, beatmap_channel)
         except Exception as ex:
-            Logger.err(f"websocker connect closed with error: {ex}, reconnecting...")
+            Logger.err(f"websocket connection closed with error: {ex}, reconnecting...")
             await asyncio.sleep(get_config().event_query_interval)
             continue

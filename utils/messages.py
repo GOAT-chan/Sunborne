@@ -1,7 +1,7 @@
 import os
 
 from datetime import datetime
-from interactions import TYPE_ALL_CHANNEL
+from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle
 from api.beatmap import get_beatmap_data
 from api.user import get_complete_user_profile
 from models.status import ServerStatus
@@ -43,7 +43,34 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
     embed.add_field("Combo", f"**x{ws_data['max_combo']}** / {beatmap_data.max_combo}", True)
     embed.add_field("Stats", f"{get_config().emojis.judge_300} {(ws_data['count_300'] + ws_data['count_geki'])} · {get_config().emojis.judge_100} {(ws_data['count_100'] + ws_data['count_katu'])} · {get_config().emojis.judge_50} {ws_data['count_50']} · {get_config().emojis.judge_miss} {ws_data['count_miss']}", True)
     Logger.verbose("sending new score submission embed")
-    await channel.send(embed=embed.build())
+    score_button = Button(
+        style=ButtonStyle.URL,
+        label="View score",
+        url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/score/{ws_data['id']}"
+    )
+    await channel.send(embed=embed.build(), components=[score_button])
 
 async def send_beatmap_status_change_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
-    pass
+    beatmap_data = await get_beatmap_data(ws_data['beatmap']['id'])
+    profile = await get_complete_user_profile(ws_data['bat']['username'])
+    embed = EmbedBuilder()
+    embed.set_color(get_config().embed_colors.beatmap_status_change)
+    embed.set_header(profile.user_name, profile.avatar_url, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{profile.user_id}")
+    embed.set_thumbnail_image(get_beatmap_cover_image_url(beatmap_data.set_id, beatmap_data.diff_id))
+    embed.set_title("Beatmap ranking status change")
+    embed.add_content(f"{beatmap_data.artist} - {beatmap_data.title} [{beatmap_data.diff}] ({round(beatmap_data.sr, 2)} {get_config().emojis.sr})\n")
+    embed.add_content(f"{beatmap_status_name_to_emoji(ws_data['old_status'])} ({ws_data['old_status']}) >> {beatmap_status_name_to_emoji(ws_data['new_status'])} ({ws_data['new_status']})")
+    embed.add_field("Length", f"{datetime.fromtimestamp(beatmap_data.length).strftime("%M:%S")}", True)
+    embed.add_field("BPM", str(beatmap_data.bpm), True)
+    embed.add_field("Approach Rate", str(beatmap_data.ar), True)
+    embed.add_field("Circle Size", str(beatmap_data.cs), True)
+    embed.add_field("Circles Count", str(beatmap_data.circle_count), True)
+    embed.add_field("Sliders Count", str(beatmap_data.slider_count_count), True)
+    embed.add_field("Spinners Count", str(beatmap_data.spinner_count_count), True)
+    Logger.verbose("sending beatmap ranking status change embed")
+    beatmap_button = Button(
+        style=ButtonStyle.URL,
+        label="View beatmap",
+        url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmaps/{beatmap_data.set_id}/{beatmap_data.diff_id}"
+    )
+    await channel.send(embed=embed.build(), components=[beatmap_button])

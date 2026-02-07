@@ -19,6 +19,7 @@ async def get_beatmap_data(id: int) -> Beatmap | None:
     beatmap.mapper = r['creator']
     beatmap.artist = r['artist']
     beatmap.diff = r['version']
+    beatmap.length = r['hit_length']
     beatmap.mode_id = r['mode_int']
     beatmap.mode_name = r['mode']
     beatmap.last_updated = datetime.fromisoformat(r['last_updated'])

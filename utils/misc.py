@@ -47,7 +47,7 @@ def get_ruleset_icon_url(gamemode: str) -> str:
     match(gamemode):
         case "Standard" | "RelaxStandard" | "AutopilotStandard" | "ScoreV2Standard":
             return "https://raw.githubusercontent.com/ppy/osu-resources/refs/heads/master/osu.Game.Resources/Textures/Icons/RulesetOsu.png"
-        case "Mania" | "ScoreV2Standard":
+        case "Mania" | "ScoreV2Mania":
             return "https://raw.githubusercontent.com/ppy/osu-resources/refs/heads/master/osu.Game.Resources/Textures/Icons/RulesetMania.png"
         case "Taiko" | "RelaxTaiko" | "ScoreV2Taiko":
             return "https://raw.githubusercontent.com/ppy/osu-resources/refs/heads/master/osu.Game.Resources/Textures/Icons/RulesetTaiko.png"

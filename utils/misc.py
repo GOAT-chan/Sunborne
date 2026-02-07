@@ -58,7 +58,7 @@ def get_ruleset_icon_emoji(gamemode: str) -> str:
     match(gamemode):
         case "Standard" | "RelaxStandard" | "AutopilotStandard" | "ScoreV2Standard":
             return get_config().emojis.std_gm
-        case "Mania" | "ScoreV2Standard":
+        case "Mania" | "ScoreV2Mania":
             return get_config().emojis.mania_gm
         case "Taiko" | "RelaxTaiko" | "ScoreV2Taiko":
             return get_config().emojis.taiko_gm

@@ -44,7 +44,7 @@ async def get_beatmap_data(id: int) -> Beatmap | None:
     beatmap.ar = r['ar']
     beatmap.cs = r['cs']
     beatmap.hp_drain = r['drain']
-    beatmap.acc = r['accuracy']
+    beatmap.od = r['accuracy']
     beatmap.bpm = r['bpm']
     Logger.verbose(f"putting into cache...")
     put_to_cache(cache_key, beatmap)

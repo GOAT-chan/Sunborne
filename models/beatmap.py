@@ -20,7 +20,7 @@ class Beatmap:
     ar: int
     cs: int
     hp_drain: int
-    acc: int
+    od: int
     bpm: int
     def __init__(self):
         self.set_id = 0
@@ -42,5 +42,5 @@ class Beatmap:
         self.ar = 0
         self.cs = 0
         self.hp_drain = 0
-        self.acc = 0
+        self.od = 0
         self.bpm = 0

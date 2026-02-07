@@ -46,8 +46,4 @@ class Emojis(BaseModel):
     pending: str
     wip: str
     graveyard: str
-    acc: str
-    ar: str
-    cs: str
-    hp_drain: str
     sr: str

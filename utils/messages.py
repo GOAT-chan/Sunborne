@@ -65,8 +65,8 @@ async def send_beatmap_status_change_message(channel: TYPE_ALL_CHANNEL, ws_data:
     embed.add_field("Approach Rate", str(beatmap_data.ar), True)
     embed.add_field("Circle Size", str(beatmap_data.cs), True)
     embed.add_field("Circles Count", str(beatmap_data.circle_count), True)
-    embed.add_field("Sliders Count", str(beatmap_data.slider_count_count), True)
-    embed.add_field("Spinners Count", str(beatmap_data.spinner_count_count), True)
+    embed.add_field("Sliders Count", str(beatmap_data.slider_count), True)
+    embed.add_field("Spinners Count", str(beatmap_data.spinner_count), True)
     Logger.verbose("sending beatmap ranking status change embed")
     beatmap_button = Button(
         style=ButtonStyle.URL,

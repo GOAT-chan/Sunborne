@@ -72,6 +72,6 @@ async def send_beatmap_status_change_message(channel: TYPE_ALL_CHANNEL, ws_data:
     beatmap_button = Button(
         style=ButtonStyle.URL,
         label="View beatmap",
-        url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmaps/{beatmap_data.set_id}/{beatmap_data.diff_id}"
+        url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}"
     )
     await channel.send(embed=embed.build(), components=[beatmap_button])

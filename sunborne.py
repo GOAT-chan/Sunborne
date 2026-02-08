@@ -41,7 +41,7 @@ if __name__ == '__main__':
     try:
         create_db()
         bot.load_extension("extensions.profile")
-        bot.load_extension("extensions.score")
+        bot.load_extension("extensions.top")
         bot.start(os.environ.get("SUNBORNE_DISCORD_BOT_TOKEN"))
     except Exception as ex:
         if "No token provided" in str(ex):

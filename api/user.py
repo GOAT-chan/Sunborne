@@ -1,6 +1,6 @@
-from api.helper.profile import get_profile, get_profile_friends, get_profile_grades, get_profile_medals, get_profile_with_gamemode
+from api.helper.profile import get_leaderboard, get_profile, get_profile_friends, get_profile_grades, get_profile_medals, get_profile_with_gamemode
 from models.user import UserProfile
-from utils.cache import get_cache_key, get_from_cache, put_to_cache
+from utils.cache import get_from_cache, put_to_cache
 from utils.logger import Logger
 from datetime import datetime
 
@@ -73,3 +73,44 @@ async def get_complete_user_profile(id: int, gamemode: str = None) -> UserProfil
         Logger.verbose("putting profile gamemode stats data to cache...")
         put_to_cache(gamemode_stats_cache_key, profile.stats)
     return profile
+
+async def get_top_players() -> list[UserProfile]:
+    cache_key = "%top_players%"
+    cached = get_from_cache(cache_key)
+    if cached:
+        Logger.verbose("cache hit!")
+        return cached
+    players = []
+    modes = [
+            "Standard",
+            "RelaxStandard",
+            "AutopilotStandard",
+            "ScoreV2Standard",
+            "Mania",
+            "ScoreV2Mania",
+            "Taiko",
+            "RelaxTaiko",
+            "ScoreV2Taiko",
+            "CatchTheBeat",
+            "RelaxCatchTheBeat",
+            "ScoreV2CatchTheBeat"
+        ]
+    for m in modes:
+        # we get by pp, not total score (and who tf compares by score anyways)
+        data = await get_leaderboard(m)
+        Logger.verbose(f"raw leaderboard data: {data}")
+        data = data['users'][0]
+        # we just do this instead of calling get_complete_user_profile
+        # it will be faster this way
+        profile = UserProfile()
+        profile.default_gamemode = m
+        profile.user_name = data['user']['username']
+        profile.user_id = data['user']['user_id']
+        profile.registration_date = datetime.fromisoformat(data['user']['register_date'])
+        profile.stats.total_pp = data['stats']['pp']
+        profile.stats.accuracy = data['stats']['accuracy']
+        profile.stats.play_count = data['stats']['play_count']
+        players.append(profile)
+    Logger.verbose("putting into cache")
+    put_to_cache(cache_key, players)
+    return players

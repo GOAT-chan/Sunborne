@@ -47,3 +47,15 @@ async def get_profile_medals(id: int, gamemode: str) -> dict | None:
     else:
         Logger.err(f"get_profile_medals failed for user {id} with code {r.status_code}")
         return None
+    
+async def get_leaderboard(gamemode: str, count: int = 1, pages: int = 1, type: str = "Pp") -> dict | None:
+    r = await client.get(get_api_url(f"user/leaderboard"),
+                         params={"mode":gamemode,
+                                 "limit":count,
+                                 "page":pages,
+                                 "type":type})
+    if r.status_code == 200:
+        return json.loads(r.text)
+    else:
+        Logger.err(f"get_leaderboard failed for user {id} with code {r.status_code}")
+        return None

@@ -1,16 +1,20 @@
 import asyncio
 import json
 import os
-from interactions import TYPE_ALL_CHANNEL
 import websockets
 
 from typing import Any
+from interactions import TYPE_ALL_CHANNEL, GuildForum
 from utils.config import get_config
 from utils.logger import Logger
 from utils.messages import send_beatmap_status_change_message, send_new_score_message
 
-async def recv_callback(data: Any, score_channel: TYPE_ALL_CHANNEL, beatmap_channel: TYPE_ALL_CHANNEL):
-    data = json.loads(str(data))
+async def recv_callback(data: Any, score_channel: TYPE_ALL_CHANNEL, beatmap_channel: GuildForum):
+    try:
+        data = json.loads(str(data))
+    except json.JSONDecodeError as ex:
+        # dict is prolly passed directly
+        data = data
     Logger.verbose(f"got raw websocket data: {data}")
     match(data['type']):
         case "NewScoreSubmitted":
@@ -22,7 +26,7 @@ async def recv_callback(data: Any, score_channel: TYPE_ALL_CHANNEL, beatmap_chan
         case _:
             Logger.warn(f"received unhandled websocket event: {data['type']}")
 
-async def handle_websocket(score_channel: TYPE_ALL_CHANNEL, beatmap_channel: TYPE_ALL_CHANNEL):
+async def handle_websocket(score_channel: TYPE_ALL_CHANNEL, beatmap_channel: GuildForum):
     Logger.info("initializing websocket connection...")
     while True:
         try:

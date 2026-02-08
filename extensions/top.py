@@ -46,7 +46,7 @@ class TopExtension(Extension):
         embed.set_title("GOAT-chan Top Players")
 
         for player in players:
-            field_text = f"""[{player.user_name}](https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{player.user_id})
+            field_text = f"""[{player.user_name}](https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/user/{player.user_id}?mode={player.default_gamemode})
              · Joined <t:{round(player.registration_date.timestamp())}:D>
              · `{round(player.stats.total_pp):,}pp` `{round(player.stats.accuracy, 2)}%` `{player.stats.play_count} plays`
             """

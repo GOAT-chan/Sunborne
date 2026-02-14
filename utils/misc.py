@@ -71,6 +71,12 @@ def get_beatmap_cover_image_url(set_id: int, diff_id: int = None) -> str:
         url += f"?{diff_id}"
     return url
 
+def get_beatmap_banner_image_url(set_id: int, diff_id: int = None) -> str:
+    url = f"https://assets.ppy.sh/beatmaps/{set_id}/covers/cover.jpg"
+    if diff_id:
+        url += f"?{diff_id}"
+    return url
+
 def beatmap_status_name_to_emoji(name: str) -> str:
     match(name):
         case "Ranked":

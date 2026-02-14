@@ -16,3 +16,8 @@ def get_from_cache(identifier: str) -> Any:
     key = get_cache_key(identifier)
     Logger.verbose(f"trying to retrieve {key} from cache...")
     return cache.get(key)
+
+def remove_from_cache(identifier: str):
+    key = get_cache_key(identifier)
+    Logger.verbose(f"removing {key} from cache...")
+    cache.delete(key)

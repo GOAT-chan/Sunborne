@@ -5,6 +5,7 @@ from interactions import TYPE_ALL_CHANNEL, Button, ButtonStyle, GuildForum
 from api.beatmap import get_beatmap_data
 from api.user import get_complete_user_profile
 from models.status import ServerStatus
+from utils.cache import get_from_cache, put_to_cache, remove_from_cache
 from utils.config import get_config
 from utils.embeds import EmbedBuilder
 from utils.logger import Logger
@@ -53,24 +54,13 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
 async def send_beatmap_status_change_message(channel: GuildForum, ws_data: dict):
     beatmap_data = await get_beatmap_data(ws_data['beatmap']['id'])
     profile = await get_complete_user_profile(ws_data['bat']['user_id'])
-    embed = EmbedBuilder()
-    embed.set_color(get_config().embed_colors.beatmap_status_change)
-    embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(beatmap_data.mode_name)}", get_ruleset_icon_url(beatmap_data.mode_name))
-    embed.set_title(beatmap_data.diff, f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}/{beatmap_data.diff_id}")
-    embed.add_content(f"{round(beatmap_data.stats.sr, 2)} {get_config().emojis.sr}")
-    embed.add_field("Circle Size", str(beatmap_data.stats.cs), True)
-    embed.add_field("Approach Rate", str(beatmap_data.stats.ar), True)
-    embed.add_field("Accuracy", str(beatmap_data.stats.od), True)
-    embed.add_field("Length", f"{datetime.fromtimestamp(beatmap_data.length).strftime("%M:%S")}", True)
-    embed.add_field("BPM", str(beatmap_data.stats.bpm), True)
-    embed.add_field("HP Drain", str(beatmap_data.stats.drain), True)
-    embed.add_field(f"pp for {get_config().emojis.x_rank}", f"{round(beatmap_data.stats.pp)}", True)
 
     post_name = f"{beatmap_data.artist} - {beatmap_data.title} ({beatmap_data.set_id})"
+    diff_field_content_cache_key = f"%bms_embed_diff_content_index%{beatmap_data.set_id}"
 
-    # get list of posts, and check if a post for this beatmap set already exist
     posts = channel.get_posts()
 
+    # try to find existing post
     post = next((p for p in posts if p.name == post_name), None)
 
     if not post:
@@ -82,7 +72,9 @@ async def send_beatmap_status_change_message(channel: GuildForum, ws_data: dict)
         info_embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(beatmap_data.mode_name)}", get_ruleset_icon_url(beatmap_data.mode_name))
         info_embed.set_thumbnail_image(get_beatmap_cover_image_url(beatmap_data.set_id))
         info_embed.add_field("Mapper", beatmap_data.mapper, True)
-        info_embed.add_field("Status Change", f"{beatmap_status_name_to_emoji(ws_data['old_status'])} **{ws_data['old_status']}**  >>  {beatmap_status_name_to_emoji(ws_data['new_status'])} **{ws_data['new_status']}**", True)
+        info_embed.add_field("Length", f"{datetime.fromtimestamp(beatmap_data.length).strftime("%M:%S")}", True)
+        info_embed.add_field("Ranking", f"{beatmap_status_name_to_emoji(ws_data['old_status'])} **{ws_data['old_status']}**  >>  {beatmap_status_name_to_emoji(ws_data['new_status'])} **{ws_data['new_status']}**", True)
+        info_embed.add_field("Difficulties", "None")
         beatmap_button = Button(style=ButtonStyle.URL,
                                 label="View beatmap",
                                 url=f"https://{os.environ.get("SUNBORNE_SERVER_DOMAIN")}/beatmapsets/{beatmap_data.set_id}")
@@ -94,5 +86,29 @@ async def send_beatmap_status_change_message(channel: GuildForum, ws_data: dict)
                                          ],
                                          components=[beatmap_button],
                                          embed=info_embed.build())
-    
-    await post.send(embed=embed.build())
+        
+    field_contents = ""
+    if get_from_cache(diff_field_content_cache_key):
+        field_contents = get_from_cache(diff_field_content_cache_key)
+        remove_from_cache(diff_field_content_cache_key)
+
+    # get the initial "post" message
+    initial_post = post.initial_post
+
+    # construct from it
+    new_embed = EmbedBuilder()
+    new_embed.construct_from(initial_post.embeds[0])
+
+    # append new diff data to field content
+    field_contents += f"[{round(beatmap_data.stats.sr, 2)} {get_config().emojis.sr}] {beatmap_data.diff}"
+    field_contents += f"\n · `CS{str(beatmap_data.stats.cs)}` `AR{str(beatmap_data.stats.ar)}` `OD{str(beatmap_data.stats.od)}` `HP{str(beatmap_data.stats.drain)}` `BPM{str(beatmap_data.stats.bpm)}`"
+    field_contents += f"\n · pp for {get_config().emojis.x_rank}: {round(beatmap_data.stats.pp)}\n"
+
+    # cache new content
+    put_to_cache(diff_field_content_cache_key, field_contents)
+
+    # update field with new content (diff field is the third field so index should be 2)
+    new_embed.edit_field(2, "Difficulties", field_contents)
+
+    # update original message
+    await initial_post.edit(embed=new_embed.build())

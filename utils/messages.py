@@ -108,7 +108,7 @@ async def send_beatmap_status_change_message(channel: GuildForum, ws_data: dict)
     put_to_cache(diff_field_content_cache_key, field_contents)
 
     # update field with new content (diff field is the third field so index should be 2)
-    new_embed.edit_field(2, "Difficulties", field_contents)
+    new_embed.edit_field(3, "Difficulties", field_contents)
 
     # update original message
     await initial_post.edit(embed=new_embed.build())

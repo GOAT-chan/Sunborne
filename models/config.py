@@ -21,20 +21,13 @@ class EmbedColors(BaseModel):
 class BeatmapRankingTag(BaseModel):
     ranked: str
     loved: str
+    approved: str
 
 class BeatmapGamemodeTag(BaseModel):
     std: str = Field(alias="Standard")
-    rx_std: str = Field(alias="RelaxStandard")
-    ap_std: str = Field(alias="AutopilotStandard")
-    sv2_std: str = Field(alias="ScoreV2Standard")
     mania: str = Field(alias="Mania")
-    sv2_mania: str = Field(alias="ScoreV2Mania")
     taiko: str = Field(alias="Taiko")
-    rx_taiko: str = Field(alias="RelaxTaiko")
-    sv2_taiko: str = Field(alias="ScoreV2Taiko")
     ctb: str = Field(alias="CatchTheBeat")
-    rx_ctb: str = Field(alias="RelaxCatchTheBeat")
-    sv2_ctb: str = Field(alias="ScoreV2CatchTheBeat")
 
 class BeatmapTag(BaseModel):
     status: BeatmapRankingTag
@@ -69,6 +62,11 @@ class Emojis(BaseModel):
     pending: str
     wip: str
     graveyard: str
+    ar: str
+    cs: str
+    od: str
+    bpm: str
+    hp: str
     sr: str
     std_gm: str
     mania_gm: str

@@ -117,28 +117,12 @@ def get_gamemode_tag_from_config(gamemode: str) -> str:
     match(gamemode):
         case "Standard":
             return get_config().channels.beatmap_status_post_tags.gamemode.std
-        case "RelaxStandard":
-            return get_config().channels.beatmap_status_post_tags.gamemode.rx_std
-        case "AutopilotStandard":
-            return get_config().channels.beatmap_status_post_tags.gamemode.ap_std
-        case "ScoreV2Standard":
-            return get_config().channels.beatmap_status_post_tags.gamemode.sv2_std
         case "Mania":
             return get_config().channels.beatmap_status_post_tags.gamemode.mania
-        case "ScoreV2Mania":
-            return get_config().channels.beatmap_status_post_tags.gamemode.sv2_mania
         case "Taiko":
             return get_config().channels.beatmap_status_post_tags.gamemode.taiko
-        case "RelaxTaiko":
-            return get_config().channels.beatmap_status_post_tags.gamemode.rx_taiko
-        case "ScoreV2Taiko":
-            return get_config().channels.beatmap_status_post_tags.gamemode.sv2_taiko
         case "CatchTheBeat":
             return get_config().channels.beatmap_status_post_tags.gamemode.ctb
-        case "RelaxCatchTheBeat":
-            return get_config().channels.beatmap_status_post_tags.gamemode.rx_ctb
-        case "ScoreV2CatchTheBeat":
-            return get_config().channels.beatmap_status_post_tags.gamemode.sv2_ctb
         
 def get_ranking_status_tag_from_config(status: str) -> str:
     match(status):
@@ -146,3 +130,5 @@ def get_ranking_status_tag_from_config(status: str) -> str:
             return get_config().channels.beatmap_status_post_tags.status.ranked
         case "Loved":
             return get_config().channels.beatmap_status_post_tags.status.loved
+        case "Approved":
+            return get_config().channels.beatmap_status_post_tags.status.approved

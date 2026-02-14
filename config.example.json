@@ -17,21 +17,14 @@
         "beatmap_status_post_tags": {
             "status": {
                 "ranked": "Ranked",
-                "loved": "Loved"
+                "loved": "Loved",
+                "approved": "Approved"
             },
             "gamemode": {
                 "Standard": "osu!",
-                "RelaxStandard": "osu! (+RX)",
-                "AutopilotStandard": "osu! (+AP)",
-                "ScoreV2Standard": "osu! (+SV2)",
                 "Mania": "osu!mania",
-                "ScoreV2Mania": "osu!mania (+SV2)",
                 "Taiko": "osu!taiko",
-                "RelaxTaiko": "osu!taiko (+RX)",
-                "ScoreV2Taiko": "osu!taiko (+SV2)",
-                "CatchTheBeat": "osu!catch",
-                "RelaxCatchTheBeat": "osu!catch (+RX)",
-                "ScoreV2CatchTheBeat": "osu!catch (+SV2)"
+                "CatchTheBeat": "osu!catch"
             }
         }
     },
@@ -58,6 +51,11 @@
         "wip": "",
         "pending": "",
         "graveyard": "",
+        "od": "",
+        "ar": "",
+        "cs": "",
+        "hp": "",
+        "bpm": "",
         "sr": "",
         "std_gm": "",
         "mania_gm": "",

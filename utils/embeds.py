@@ -76,8 +76,12 @@ class EmbedBuilder:
         self.title_url = url
     def set_color(self, color: str):
         self.color = Color.from_hex(color)
-    def add_content(self, msg: str):
-        self.contents += msg + "\n"
+    def add_content(self, msg: str, new_line: bool = True):
+        if not self.contents:
+            self.contents = ""
+        self.contents += msg
+        if new_line:
+            self.contents += "\n"
     def clear_content(self):
         self.contents = ""
     def add_field(self, title: str, content: str, inline: bool = False) -> int:

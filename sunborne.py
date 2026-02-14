@@ -10,7 +10,8 @@ from interactions import BaseTrigger, Client, Intents, listen, Task, IntervalTri
 from utils.messages import send_status_message
 from utils.websocket import handle_websocket
 
-bot = Client(intents=Intents.DEFAULT)
+bot = Client(intents=Intents.DEFAULT,
+             send_command_tracebacks=False)
 
 # we run it here so everything's ready to go
 load_config()

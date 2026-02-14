@@ -18,10 +18,10 @@ async def recv_callback(data: Any, score_channel: TYPE_ALL_CHANNEL, beatmap_chan
     Logger.verbose(f"got raw websocket data: {data}")
     match(data['type']):
         case "NewScoreSubmitted":
-            Logger.verbose("detected new score submission!")
+            Logger.info("detected new score submission!")
             await send_new_score_message(score_channel, data['data'])
         case "CustomBeatmapStatusChanged":
-            Logger.verbose("detected beatmap status change!")
+            Logger.info("detected beatmap status change!")
             await send_beatmap_status_change_message(beatmap_channel, data['data'])
         case _:
             Logger.warn(f"received unhandled websocket event: {data['type']}")

@@ -40,7 +40,7 @@ async def send_new_score_message(channel: TYPE_ALL_CHANNEL, ws_data: dict):
     embed.add_content(f"{grade_to_emoji(ws_data['grade'])} {str(ws_data['mods']).replace("None", "")} (<t:{round(datetime.fromisoformat(ws_data['when_played']).timestamp())}:R>)")
     embed.add_field("Score", f"{ws_data['total_score']:,}", True)
     embed.add_field("Accuracy", f"{round(ws_data['accuracy'], 2)}%", True)
-    embed.add_field("pp", str(round(ws_data['performance_points'], 2)), True)
+    embed.add_field("pp", str(round(ws_data['performance_points'])), True)
     embed.add_field("Combo", f"**x{ws_data['max_combo']}** / {beatmap_data.stats.max_combo}", True)
     embed.add_field("Stats", f"{get_config().emojis.judge_300} {(ws_data['count_300'] + ws_data['count_geki'])} · {get_config().emojis.judge_100} {(ws_data['count_100'] + ws_data['count_katu'])} · {get_config().emojis.judge_50} {ws_data['count_50']} · {get_config().emojis.judge_miss} {ws_data['count_miss']}", True)
     Logger.verbose("sending new score submission embed")

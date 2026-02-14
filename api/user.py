@@ -2,9 +2,7 @@ from api.helper.profile import get_leaderboard, get_profile, get_profile_friends
 from models.user import UserProfile
 from utils.logger import Logger
 from datetime import datetime
-from cashews import cache, NOT_NONE
 
-@cache(ttl="15m", condition=NOT_NONE)
 async def get_complete_user_profile(id: int, gamemode: str = None) -> UserProfile | None:
     Logger.info(f"getting complete profile data for user id {id}")
     profile = UserProfile()
@@ -59,7 +57,6 @@ async def get_complete_user_profile(id: int, gamemode: str = None) -> UserProfil
     profile.stats.medals = len(medals['hush_hush']['medals']) + len(medals['beatmap_hunt']['medals']) + len(medals['mod_introduction']['medals']) + len(medals['skill']['medals'])
     return profile
 
-@cache(ttl="15m")
 async def get_top_players() -> list[UserProfile]:
     players = []
     modes = [

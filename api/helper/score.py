@@ -1,11 +1,13 @@
 import json
 
+from cashews import NOT_NONE, cache
 from httpx import AsyncClient
 from utils.api import get_api_url
 from utils.logger import Logger
 
 client = AsyncClient()
 
+@cache(ttl="10m", condition=NOT_NONE)
 async def get_top_score(gamemode: str, count: int = 1, pages: int = 1) -> dict | None:
     r = await client.get(get_api_url("score/top"),
                          params={"mode":gamemode,

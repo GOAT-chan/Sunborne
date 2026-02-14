@@ -4,9 +4,7 @@ from api.user import get_complete_user_profile
 from models.score import Score
 from utils.logger import Logger
 from datetime import datetime
-from cashews import cache
 
-@cache(ttl="15m")
 async def get_top_scores() -> list[Score]:
     scores = []
     modes = [

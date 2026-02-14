@@ -2,9 +2,7 @@ from api.helper.beatmap import get_beatmap, get_beatmap_pp
 from models.beatmap import Beatmap
 from utils.logger import Logger
 from datetime import datetime
-from cashews import cache, NOT_NONE
 
-@cache(ttl="10m", condition=NOT_NONE)
 async def get_beatmap_data(id: int) -> Beatmap | None:
     Logger.info(f"getting data for beatmap {id}")
     r = await get_beatmap(id)

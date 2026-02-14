@@ -87,7 +87,7 @@ class ProfileExtension(Extension):
             embed.set_title("Profile")
             embed.set_color(get_config().embed_colors.success)
             embed.set_thumbnail_image(profile.avatar_url)
-            embed.set_image(profile.banner_url)
+            embed.add_image(profile.banner_url)
             embed.set_header(f"{profile.user_name} ({profile.status})", f"https://flagsapi.com/{profile.country_code}/flat/64.png")
             embed.set_footer(f"{map_sunrise_gamemode_to_sunborne(profile.stats.gamemode)}", get_ruleset_icon_url(profile.stats.gamemode))
             embed.add_field("Registered", f"<t:{round(profile.registration_date.timestamp())}:D>", True)

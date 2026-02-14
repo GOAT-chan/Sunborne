@@ -2,16 +2,12 @@ from api.beatmap import get_beatmap_data
 from api.helper.score import get_top_score
 from api.user import get_complete_user_profile
 from models.score import Score
-from utils.cache import get_from_cache, put_to_cache
 from utils.logger import Logger
 from datetime import datetime
+from cashews import cache
 
+@cache(ttl="15m")
 async def get_top_scores() -> list[Score]:
-    cache_key = "%top_scores%"
-    cached = get_from_cache(cache_key)
-    if cached:
-        Logger.verbose("cache hit!")
-        return cached
     scores = []
     modes = [
             "Standard",
@@ -50,6 +46,4 @@ async def get_top_scores() -> list[Score]:
         score.mods = r['mods']
         score.grade = r['grade']
         scores.append(score)
-    Logger.verbose("putting into cache")
-    put_to_cache(cache_key, scores)
     return scores

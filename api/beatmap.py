@@ -1,16 +1,16 @@
 from api.helper.beatmap import get_beatmap, get_beatmap_pp
 from models.beatmap import Beatmap
 from utils.logger import Logger
-from utils.cache import get_from_cache, put_to_cache
 from datetime import datetime
+from cashews import cache, NOT_NONE
 
+@cache(ttl="10m", condition=NOT_NONE)
 async def get_beatmap_data(id: int) -> Beatmap | None:
     Logger.info(f"getting data for beatmap {id}")
-    cache_key = f"%beatmap%{id}"
-    if get_from_cache(cache_key):
-        Logger.verbose("cache hit!")
-        return get_from_cache(cache_key)
     r = await get_beatmap(id)
+    if not r:
+        Logger.err(f"couldn't get data for beatmap {id}")
+        return None
     r_pp = await get_beatmap_pp(id)
     Logger.verbose(f"raw beatmap data: {r}")
     beatmap = Beatmap()
@@ -55,6 +55,4 @@ async def get_beatmap_data(id: int) -> Beatmap | None:
     except KeyError as ex:
         Logger.verbose(f"couldn't get key {ex}, probably non-std gamemode")
         pass
-    Logger.verbose(f"putting into cache...")
-    put_to_cache(cache_key, beatmap)
     return beatmap

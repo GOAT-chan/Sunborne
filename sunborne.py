@@ -2,6 +2,7 @@ import asyncio
 import os
 import traceback
 
+from cashews import cache
 from api.status import get_server_status
 from utils.logger import Logger
 from utils.config import get_config, load_config
@@ -31,6 +32,7 @@ async def health_check():
 async def on_ready():
     if os.environ.get("SUNBORNE_DEBUG"):
         Logger.warn("debug logging is ENABLED, this might affect performance!")
+    cache.setup("mem://")
     health_check.start()
     asyncio.create_task(handle_websocket(bot.get_channel(get_config().channels.score_submission), bot.get_channel(get_config().channels.beatmap_status)))
     if get_config().channels.health_check and not get_config().only_send_health_check_embed_when_failed:

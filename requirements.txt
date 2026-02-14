@@ -1,5 +1,5 @@
 aiosqlite==0.22.1
-cacheout==0.16.0
+cashews==7.4.4
 discord-py-interactions==5.16.0
 httpx==0.28.1
 pydantic==2.12.5

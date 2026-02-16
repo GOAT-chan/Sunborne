@@ -33,6 +33,7 @@ async def on_ready():
     if os.environ.get("SUNBORNE_DEBUG"):
         Logger.warn("debug logging is ENABLED, this might affect performance!")
     cache.setup("mem://")
+    await create_db()
     health_check.start()
     asyncio.create_task(handle_websocket(bot.get_channel(get_config().channels.score_submission), bot.get_channel(get_config().channels.beatmap_status)))
     if get_config().channels.health_check and not get_config().only_send_health_check_embed_when_failed:
@@ -42,7 +43,6 @@ async def on_ready():
 
 if __name__ == '__main__':
     try:
-        create_db()
         bot.load_extension("extensions.profile")
         bot.load_extension("extensions.top")
         bot.start(os.environ.get("SUNBORNE_DISCORD_BOT_TOKEN"))

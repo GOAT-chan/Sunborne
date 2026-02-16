@@ -1,14 +1,5 @@
 from pydantic import BaseModel, Field
 
-class Config(BaseModel):
-    health_check_interval: int
-    event_query_interval: int
-    only_send_health_check_embed_when_failed: bool
-    embed_colors: EmbedColors
-    channels: Channels
-    emojis: Emojis
-    privileged_users: list[int]
-
 class EmbedColors(BaseModel):
     success: str
     error: str
@@ -71,3 +62,12 @@ class Emojis(BaseModel):
     mania_gm: str
     taiko_gm: str
     ctb_gm: str
+
+class Config(BaseModel):
+    health_check_interval: int
+    event_query_interval: int
+    only_send_health_check_embed_when_failed: bool
+    embed_colors: EmbedColors
+    channels: Channels
+    emojis: Emojis
+    privileged_users: list[int]

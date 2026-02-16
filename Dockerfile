@@ -1,4 +1,4 @@
-FROM python:3.13.11-alpine3.23
+FROM python:3.14-slim-trixie
 
 WORKDIR /app
 
@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "./sunborne.py"]
+CMD ["python", "sunborne.py"]

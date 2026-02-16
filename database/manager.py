@@ -12,10 +12,11 @@ SQL_URL = f"sqlite+aiosqlite:///{DATABASE_PATH}"
 
 engine = create_async_engine(SQL_URL)
 
-def create_db():
+async def create_db():
     if not os.path.isfile(DATABASE_PATH):
         Logger.info("no exiting database found, generating one...")
-        SQLModel.metadata.create_all(engine)
+        async with engine.begin() as conn:
+            await conn.run_sync(SQLModel.metadata.create_all)
         Logger.success("database generated!")
     else:
         Logger.verbose("database already exists, loading that...")

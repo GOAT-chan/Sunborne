@@ -64,5 +64,18 @@ async def get_leaderboard(gamemode: str, count: int = 1, pages: int = 1, type: s
     if r.status_code == 200:
         return json.loads(r.text)
     else:
-        Logger.err(f"get_leaderboard failed for user {id} with code {r.status_code}")
+        Logger.err(f"get_leaderboard failed with code {r.status_code}")
+        return None
+    
+@cache(ttl="2m", condition=NOT_NONE)
+async def get_scores(id: int, gamemode: str, count: int = 1, pages: int = 1, type: str = "Recent") -> dict | None:
+    r = await client.get(get_api_url(f"user/{id}/scores"),
+                         params={"mode":gamemode,
+                                 "limit":count,
+                                 "page":pages,
+                                 "type":type})
+    if r.status_code == 200:
+        return json.loads(r.text)
+    else:
+        Logger.err(f"get_scores failed for user {id} with code {r.status_code}")
         return None

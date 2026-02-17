@@ -135,6 +135,14 @@ class ProfileExtension(Extension):
             return
         
         profile = await get_complete_user_profile(user_id)
+
+        if not profile:
+            embed.set_color(get_config().embed_colors.error)
+            embed.set_title("Couldn't find this user ID.")
+            embed.add_content("Please check the user ID that you've entered again.\n")
+            embed.add_content("If you are sure that you've entered the correct profile ID, contact a moderator.")
+            await ctx.send(embed=embed.build())
+            return
         
         # link
         user = User()

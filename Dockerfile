@@ -1,11 +1,25 @@
-FROM python:3.14-slim-trixie
+FROM ghcr.io/astral-sh/uv:alpine3.23 AS build
 
 WORKDIR /app
 
-COPY requirements.txt .
+RUN apk add build-base clang-dev patchelf
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv python install 3.13
+
+COPY pyproject.toml uv.lock .python-version .
+
+RUN uv sync --locked
 
 COPY . .
 
-CMD ["python", "sunborne.py"]
+RUN uv run nuitka --mode=standalone --follow-imports --clang --assume-yes-for-downloads --output-filename=sunborne --output-dir=publish --include-package-data=emoji main.py
+
+FROM alpine:3.23 AS pack
+
+WORKDIR /app
+
+COPY --from=build /app/publish/main.dist/ .
+
+ENTRYPOINT [ ]
+
+CMD [ "./sunborne" ]

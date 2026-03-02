@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sys
 import traceback
 
 from cashews import cache
@@ -41,7 +42,7 @@ async def on_ready():
         Logger.warn(f"to avoid unnecessary clutter, consider enabling \"only_send_health_check_embed_when_failed\"")
     Logger.info("Bot is now ready!")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         bot.load_extension("extensions.profile")
         bot.load_extension("extensions.top")
@@ -50,13 +51,13 @@ if __name__ == '__main__':
     except Exception as ex:
         if "No token provided" in str(ex):
             Logger.err("please set \"SUNBORNE_DISCORD_BOT_TOKEN\"")
-            exit(1)
+            sys.exit(1)
         elif "An improper token" in str(ex):
             Logger.err("please re-check \"SUNBORNE_DISCORD_BOT_TOKEN\"")
-            exit(1)
+            sys.exit(1)
         elif "No such file or directory" in str(ex) and "config.json" in str(ex):
             Logger.err("please create a config file (config.json)")
-            exit(1)
+            sys.exit(1)
         else:
             Logger.err(traceback.format_exc())
-            exit(1)
+            sys.exit(1)

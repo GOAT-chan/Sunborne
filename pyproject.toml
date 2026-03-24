@@ -1,0 +1,17 @@
+[project]
+name = "sunborne"
+version = "0.1.0"
+description = "Discord bot for Sunrise-powered osu! private server(s)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "cashews>=7.4.4",
+    "discord-py-interactions>=5.16.0",
+    "httpx>=0.28.1",
+    "nuitka>=4.0.1",
+    "pydantic>=2.12.5",
+    "rich>=14.3.3",
+    "sqlmodel>=0.0.37",
+    "websockets>=16.0",
+]

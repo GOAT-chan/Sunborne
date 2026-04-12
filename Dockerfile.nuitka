@@ -12,7 +12,7 @@ RUN uv sync --locked
 
 COPY . .
 
-RUN uv run nuitka --mode=standalone --follow-imports --clang --assume-yes-for-downloads --output-filename=sunborne --output-dir=publish --include-package-data=emoji main.py
+RUN uv run nuitka --mode=standalone --follow-imports --clang --assume-yes-for-downloads --output-filename=sunborne --output-dir=publish --include-package-data=emoji --remove-output --deployment main.py
 
 FROM alpine:3.23 AS pack
 

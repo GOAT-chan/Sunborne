@@ -1,0 +1,15 @@
+[project]
+name = "sunborne"
+version = "0.1.0"
+description = "Complementary discord bot for Sunrise-powered osu! private servers"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "cashews>=7.5.0",
+    "interactions-py==6.0.0rc1",
+    "loguru>=0.7.3",
+    "niquests>=3.19.0",
+    "nuitka[onefile]>=4.1.2",
+    "python-dotenv>=1.2.2",
+]

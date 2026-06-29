@@ -1,37 +1,54 @@
-import os
+from loguru import logger
+from aiosqlite import Connection, connect, Cursor
+from utils.environ import get_database_file_path
+from constants.database import MIGRATIONS
+from database.objects import UserLinkData, UserPreferencesData
 
-from utils.logger import Logger
-from sqlmodel import SQLModel
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.ext.asyncio.engine import create_async_engine
-from sqlalchemy import ScalarResult
-from database.models.user import User
-
-DATABASE_PATH = os.path.join(os.getcwd(), "data", "sunborne.db")
-SQL_URL = f"sqlite+aiosqlite:///{DATABASE_PATH}"
-
-engine = create_async_engine(SQL_URL)
-
-async def create_db():
-    if not os.path.isfile(DATABASE_PATH):
-        Logger.info("no exiting database found, generating one...")
-        async with engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.create_all)
-        Logger.success("database generated!")
-    else:
-        Logger.verbose("database already exists, loading that...")
-
-class DbSession:
-    session: AsyncSession
-    def __init__(self):
-        self.session = AsyncSession(engine)
-    async def add_or_update(self, user: User):
-        self.session.add(user)
-        await self.session.commit()
-    async def remove(self, user: User):
-        await self.session.delete(user)
-        await self.session.commit()
-    async def execute_sql(self, statement: str) -> ScalarResult:
-        return await self.session.exec(statement)
-    async def close(self):
-        await self.session.close()
+class Database:
+    _connection: Connection
+    async def _migrate(self):
+        async with self._connection.cursor() as cursor:
+            version_query = await cursor.execute("PRAGMA user_version")
+            version = await version_query.fetchone()
+            version = version[0]
+            for ver, script in enumerate(MIGRATIONS, start=1):
+                if version >= ver:
+                    continue
+                logger.info(f"Applying database migration {ver} / {len(MIGRATIONS)}...")
+                await cursor.executescript(script)
+                await cursor.execute(f"PRAGMA user_version = {ver}")
+                await self._connection.commit()
+                version = ver
+    async def get_user(self, discord_id: int) -> tuple[UserLinkData, UserPreferencesData] | None:
+        async with self._connection.cursor() as cursor:
+            query = await cursor.execute("SELECT * FROM user_link WHERE discord_id = ?", (discord_id,))
+            user = await query.fetchone()
+            if not user:
+                return None
+        async with self._connection.cursor() as cursor:
+            query = await cursor.execute("SELECT * FROM user_preferences WHERE discord_id = ?", (discord_id,))
+            pref = await query.fetchone()
+        return UserLinkData.from_sql_row(user), UserPreferencesData.from_sql_row(pref)
+    async def add_user(self, discord_id: int, server_id: int):
+        user = UserLinkData.new(discord_id, server_id)
+        preferences = UserPreferencesData.new(discord_id)
+        logger.debug(f"Linking user {server_id} to discord profile {discord_id}...")
+        async with self._connection.cursor() as cursor:
+            user_data = user.to_sql()
+            pref_data = preferences.to_sql()
+            await cursor.execute(user_data[0], user_data[1])
+            await cursor.execute(pref_data[0], pref_data[1])
+            await self._connection.commit()
+    async def delete_user(self, discord_id):
+        async with self._connection.cursor() as cursor:
+            await cursor.execute("DELETE FROM user_link WHERE discord_id = ?", (discord_id,))
+            await cursor.execute("DELETE FROM user_preferences WHERE discord_id = ?", (discord_id,))
+            await self._connection.commit()
+    @classmethod
+    async def init(cls):
+        db = cls()
+        db._connection = await connect(get_database_file_path())
+        await db._migrate()
+        return db
+    
+database: Database = None

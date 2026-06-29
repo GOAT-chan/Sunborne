@@ -1,8 +1,6 @@
-# Sunborne
+.env
 data/
-config.json
-run.bat
-sunborne.db
+publish/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

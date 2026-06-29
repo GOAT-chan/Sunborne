@@ -1,4 +1,4 @@
-MIGRATIONS = [
+MIGRATIONS: list[str] = [
     """
     CREATE TABLE IF NOT EXISTS user_link (
         discord_id INTEGER NOT NULL,

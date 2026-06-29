@@ -27,4 +27,20 @@ class AppConfig(Config):
 class EmojiConfig(Config):
     def _get_template(self):
         return {
+            "ranking": {
+                "xh": "",
+                "x": "",
+                "sh": "",
+                "s": "",
+                "a": "",
+                "b": "",
+                "c": "",
+                "d": ""
+            },
+            "ruleset": {
+                "osu": "",
+                "mania": "",
+                "taiko": "",
+                "catch": ""
+            }
         }

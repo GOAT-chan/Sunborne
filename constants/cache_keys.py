@@ -1,1 +1,1 @@
-PROFILE_LINKING_DATA = "$sunborne$profile_link#_"
+PROFILE_LINKING_DATA: str = "$sunborne$profile_link#_"

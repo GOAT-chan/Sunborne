@@ -45,6 +45,15 @@ class ServerAdapter:
                 users.append(BasicUser.from_response(i))
             return users
         return BasicUser.from_response(r[0])
+    async def get_user(self, id: int) -> BasicUser | None:
+        r = await self._get(endpoints.USER_INFO,
+                            params={
+                                "id": id
+                            })
+        if not r:
+            logger.error(f"get_user failed: id={id}")
+            return None
+        return BasicUser.from_response(r)
     @classmethod
     async def init(cls, url: str):
         inst = cls(url)
